@@ -65,38 +65,35 @@ class LocationSearchDelegate extends SearchDelegate {
       ),
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        searchFor,
-        const Divider(height: 40, thickness: 2, indent: 50, endIndent: 50),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 0, 8.0, 10.0),
-          child: Text(
-            'Recent',
-            style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          searchFor,
+          const Divider(height: 40, thickness: 2, indent: 50, endIndent: 50),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(8.0, 0, 8.0, 10.0),
+            child: Text(
+              'Recent',
+              style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+            ),
           ),
-        ),
-        // Recent location column
-        FutureBuilder(
-          future: RecentsHandler().getRecents(count: 2),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            switch(snapshot.connectionState){
-              case ConnectionState.waiting:
-                return Container(
-                  alignment: Alignment.topCenter,
-                  child: LoadingAnimationWidget.horizontalRotatingDots(color: Colors.black, size: 20),
-                );
-              default: {
-                recents = snapshot.data ?? [];
-                return Column(
-                  children: recents.isEmpty ? [] : recents.map((recent) => SearchListItem(location: recent)).toList(),
-                );
+          // Recent location column
+          FutureBuilder(
+            future: RecentsHandler().getRecents(),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              switch(snapshot.connectionState){
+                default: {
+                  recents = snapshot.data ?? [];
+                  return Column(
+                    children: recents.isEmpty ? [] : recents.map((recent) => SearchListItem(location: recent)).toList(),
+                  );
+                }
               }
-            }
-          },
-        )
-      ],
+            },
+          )
+        ],
+      ),
     );
   }
 

@@ -52,6 +52,7 @@ class WeatherBodyBuilder {
               uvi: oneWeather?.current?.uvi ?? -1,
               sunrise: oneWeather?.current?.sunrise ?? -1,
               sunset: oneWeather?.current?.sunset ?? -1,
+              timeZone: oneWeather?.timezoneOffset ?? 0,
               humidity: oneWeather?.current?.humidity ?? -1,
               windSpeed: oneWeather?.current?.windSpeed ?? -1,
               windDeg: oneWeather?.current?.windDeg ?? -1,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:howstheweather/data%20models/geocoding_location.dart';
 import 'package:howstheweather/services/location_search_delegate.dart';
 import 'package:howstheweather/services/weather_body.dart';
 import 'package:howstheweather/utilities/exclusion_settings.dart';
 import 'package:howstheweather/utilities/openweather_api_handler.dart';
+import 'package:howstheweather/utilities/shared_preferences_handler.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MainWeather extends StatefulWidget{
@@ -25,51 +27,72 @@ class MainWeatherState extends State<MainWeather>{
 
     init();
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey,
-        //InkWell or GestureDetector lets you have a onTap option on any type of Widget
-        title: InkWell(
-          onTap: (){
-            showSearch(
-              context: context,
-              delegate: LocationSearchDelegate()
+    return FutureBuilder(
+      future: RecentsHandler().getRecents(count: 1),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        switch(snapshot.connectionState){
+          case ConnectionState.waiting:
+            return Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.all(20),
+              child: LoadingAnimationWidget.staggeredDotsWave(color: Colors.black, size: 50),
             );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey),
-            //Centre the whole title so that the whole AppBar is clickable, else only the text is clickable
-            child: Center(
-              child: Text(
-                title,
-                style: const TextStyle(fontSize: 24),
-              ),
-            ),
-          ),
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: FutureBuilder(
-        future: ocrInstance?.processRequest(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          switch(snapshot.connectionState){
-            case ConnectionState.waiting:
-              return Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(20),
-                child: LoadingAnimationWidget.staggeredDotsWave(color: Colors.black, size: 50),
-              );
-            default:
-              builder.oneWeather = snapshot.data;
-              return builder.build();
-          }
-        },
-      ),
+          default:
+            List<GeocodingLocation> recentLocations = snapshot.data;
+            if(recentLocations.isNotEmpty){
+              builder.location = recentLocations[0];
+              // print('DEBUG: Latest Location - ${builder.location?.toJson()}');
+              ocrInstance = OneCallWeatherRequest(lat: builder.location?.lat?.toString(), lon: builder.location?.lon?.toString(), exclude: Exclusions.exclude(alerts: true, minutely: true));
+              title = '${builder.location?.name}, ${builder.location?.country}';
+            }
+            return Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.grey,
+                  //InkWell or GestureDetector lets you have a onTap option on any type of Widget
+                  title: InkWell(
+                    onTap: (){
+                      showSearch(
+                          context: context,
+                          delegate: LocationSearchDelegate()
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey),
+                      //Centre the whole title so that the whole AppBar is clickable, else only the text is clickable
+                      child: Center(
+                        child: Text(
+                          title,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    ),
+                  ),
+                  automaticallyImplyLeading: false,
+                ),
+                body: FutureBuilder(
+                  future: ocrInstance?.processRequest(),
+                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    switch(snapshot.connectionState){
+                      case ConnectionState.waiting:
+                        return Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.all(20),
+                          child: LoadingAnimationWidget.staggeredDotsWave(color: Colors.black, size: 50),
+                        );
+                      default:
+                        builder.oneWeather = snapshot.data;
+                        return builder.build();
+                    }
+                  },
+                )
+            );
+        }
+      }
     );
   }
 
-  void init() async{
+  void init() {
     Map? navigatorData = {};
     navigatorData = ModalRoute.of(context) == null ? {} : ModalRoute.of(context)?.settings.arguments as Map?;
     if(!(navigatorData == null && navigatorData?['locationObj'] == null)){

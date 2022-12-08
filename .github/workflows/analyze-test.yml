@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - test
+  pull_request:
+    branches:
+      - test
+    paths:
+      - ".github/workflows/analyze-test.yml"
 
 jobs:
   build:

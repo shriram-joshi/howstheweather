@@ -1,4 +1,4 @@
-name: Flutter Build Release APK
+name: Flutter Analyze
 
 on:
   push:

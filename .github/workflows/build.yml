@@ -1,10 +1,8 @@
-name: Flutter Code Analysis
+name: Flutter APK build
 
 on:
   push:
-    branches: [ master, test ]
-  pull_request:
-    branches: [ master ]
+    branches: [ master, epoch-to-human-readable-fix, shared-preference-fix, test ]
 
 jobs:
   build:

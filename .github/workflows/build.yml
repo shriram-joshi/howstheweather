@@ -2,7 +2,7 @@ name: Flutter APK build
 
 on:
   push:
-    branches: [ master, epoch-to-human-readable-fix, shared-preference-fix, test ]
+    branches: [ epoch-to-human-readable-fix, shared-preference-fix, test ]
 
 jobs:
   build:

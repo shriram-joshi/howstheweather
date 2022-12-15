@@ -2,13 +2,13 @@ name: Flutter - Build App Bundle on PR Merge to Main
 
 on:
   pull_request:
-    types: [merged] 
+    types: [ closed ]
     branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    if: "github.event.pull_request.merged == true"
     steps:
       - uses: actions/checkout@v2
 

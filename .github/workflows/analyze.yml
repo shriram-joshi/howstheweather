@@ -1,4 +1,4 @@
-name: Flutter ACode Analysis
+name: Flutter Code Analysis
 
 on:
   pull_request:

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:howstheweather/utilities/formatting_helper.dart';
-import 'package:intl/intl.dart';
 
 class MiscWeatherInfoWidget{
   late Widget miscWeatherInfo;
@@ -26,7 +25,7 @@ class MiscWeatherInfoWidget{
     required this.humidity,
     required this.windSpeed,
     required this.windDeg,
-    required this.visibilityKm}){
+    required this.visibilityKm, required num timeZone}){
 
     miscWeatherInfo = Center(
       child: Container(

@@ -1,11 +1,11 @@
 name: Flutter Code Analysis
 
 on:
+  push:
   pull_request:
-    branches: [ master, epoch-to-human-readable-fix, shared-preference-fix, test ]
 
 jobs:
-  build:
+  analyze:
     runs-on: ubuntu-latest
 
     steps:
